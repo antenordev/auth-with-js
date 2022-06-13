@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview Page</title>
+</head>
+<body>
+    <button type="submit" id="form_logout">Logout</button>
+    <ul id="list-data"></ul>
+    <script>
+        let jwt = localStorage.getItem('jwt');
+        if(!jwt) {
+            window.location.href = "/";
+        }
+
+        const loginButton = document.getElementById("form_logout");
+
+        loginButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                localStorage.clear();
+                document.location.reload(true);
+            }
+        );
+
+        let data = [];
+
+        (async () => {
+            data = await fetch(`${process.env.API_URL}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                mode: 'cors',
+                cache: 'default'
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(json) {
+                return json;
+            })
+            .catch(function(error) {
+                console.log("Error:", error);
+            });
+
+            var list = data.map(function(item){
+                return `
+                    <li>Name: ${item.name}</li>
+                    <li>E-mail:  ${item.email} </li>
+                `;
+            })
+
+            document.getElementById('list-data').innerHTML = list;
+        })();
+    </script>
+</body>
+</html>
